@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -eq 0 ]; then
+    echo "Error: Please provide the app name as an argument"
+    echo "Usage: $0 <app-name>"
+    exit 1
+fi
+
+APP_NAME="$1"
+TEMPLATE_APP="${2:-openbase}"
+
+# Create the app with container stack
+echo "Creating Heroku app: $APP_NAME"
+heroku create "$APP_NAME" --stack container
+
+# Copy config vars from template app, excluding certain keys
+echo "Copying config vars from template app: $TEMPLATE_APP"
+heroku config --json -a "$TEMPLATE_APP" | \
+    jq 'del(.DATABASE_URL, .DJANGO_SECRET_KEY, .REDIS_URL)' | \
+    jq -r 'to_entries[] | select(.value != null) | "\(.key)\t\(.value | @base64)"' | \
+    while IFS=$'\t' read -r key value; do
+        decoded_value=$(echo "$value" | base64 -d)
+        heroku config:set --app "$APP_NAME" "$key=$decoded_value"
+    done
+
+# Generate a new DJANGO_SECRET_KEY
+echo "Generating new DJANGO_SECRET_KEY"
+NEW_SECRET_KEY=$(openssl rand -base64 32)
+heroku config:set DJANGO_SECRET_KEY="$NEW_SECRET_KEY" --app "$APP_NAME"
+
+# Add required add-ons (using mini tier for cost efficiency)
+echo "Adding PostgreSQL and Redis add-ons..."
+heroku addons:create heroku-postgresql:essential-0 --app "$APP_NAME"
+heroku addons:create heroku-redis:mini --app "$APP_NAME"
+
+echo "Setup complete! You can now deploy using either:"
+echo "1. GitHub Actions deployment workflow"
+echo "2. Manual deployment with:"
+echo "   ./scripts/gha_build $APP_NAME"
+echo "   ./scripts/gha_deploy $APP_NAME"
+

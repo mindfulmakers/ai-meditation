@@ -1,0 +1,29 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  db:
+    image: pgvector/pgvector:pg14
+    volumes:
+      - ../data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=appdata
+    ports:
+      - 5432:5432
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - PROXY_TARGET=${PROXY_TARGET:-http://host.docker.internal:8000}
+      - FRONTEND_PROXY_TARGET=${FRONTEND_PROXY_TARGET:-http://host.docker.internal:8080}

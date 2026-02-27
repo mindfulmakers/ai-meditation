@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_NAME="$1"
+GH_PAT="$2"
+APP_REQUIREMENTS="$3"
+
+# shellcheck disable=SC2016
+WEB_CMD='gunicorn config.asgi:application --log-file - -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT'
+WORKER_CMD="taskiq worker --log-level=INFO --max-threadpool-threads=2 config.taskiq_config:broker config.taskiq_tasks"
+BEAT_CMD="taskiq scheduler --log-level=INFO config.taskiq_config:scheduler config.taskiq_tasks"
+RELEASE_CMD='python3 manage.py migrate'
+
+mv ./Dockerfile ./Dockerfile.tmp
+date > nocache.txt
+
+# Write app requirements to file - ensure git+ prefix for GitHub URLs
+if [[ "${APP_REQUIREMENTS}" == https://github.com/* ]]; then
+    echo "git+${APP_REQUIREMENTS}" > app_requirements_docker.txt
+else
+    echo "${APP_REQUIREMENTS}" > app_requirements_docker.txt
+fi
+
+# Build each configuration
+for type in web worker beat release; do
+    case "$type" in
+        web)     CMD="${WEB_CMD}" ;;
+        worker)  CMD="${WORKER_CMD}" ;;
+        beat)    CMD="${BEAT_CMD}" ;;
+        release) CMD="${RELEASE_CMD}" ;;
+    esac
+
+    cat ./Dockerfile.tmp > ./Dockerfile
+    echo "CMD ${CMD}" >> Dockerfile
+    docker buildx build --platform linux/amd64 --push -t "registry.heroku.com/${APP_NAME}/${type}:latest" \
+        --build-arg GH_PAT="${GH_PAT}" \
+        --provenance false .
+done
+
+mv Dockerfile.tmp Dockerfile
+rm nocache.txt

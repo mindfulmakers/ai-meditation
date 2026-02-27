@@ -1,0 +1,53 @@
+/*
+
+This CSS file contains some tweaks specific to the included Bootstrap theme.
+It's separate from `style.css` so that it can be easily overridden by replacing
+a single block in the template.
+
+*/
+
+.navbar-inverse .brand a {
+  color: #999999;
+}
+
+.navbar {
+  background: #2C2C2C;
+  color: white;
+  border: none;
+  border-top: 5px solid #417690;
+  border-radius: 0;
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+  background: #2C2C2C;
+}
+
+.navbar .dropdown-menu li a, .navbar .dropdown-menu li {
+  color: #417690;
+}
+
+.navbar .dropdown-menu li a:hover {
+  background: #EEEEEE;
+  color: #417690;
+}
+
+.breadcrumb li.active a {
+  color: #777;
+}
+
+/* custom general page styles */
+.hero-unit h1, .hero-unit h2 {
+  color: #417690;
+}
+
+body a {
+  color: #417690;
+}
+
+body a:hover {
+  color: #417690;
+}
+
+body {
+  background: white; !important;
+}

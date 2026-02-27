@@ -1,0 +1,16 @@
+[project]
+name = "ai-meditation-starter-kit-api"
+version = "0.1.0"
+description = ""
+authors = []
+dependencies = [
+    
+    
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.entry-points."web.app_packages"]
+ai_meditation_starter_kit_api = "ai_meditation_starter_kit_api.package_apps:get_apps"

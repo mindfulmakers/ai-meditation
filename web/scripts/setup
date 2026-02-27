@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Navigate to the project root directory (parent of scripts)
+pushd "$(dirname "$0")/.."
+
+# Create virtual environment if it doesn't exist
+if [ ! -d "venv" ]; then
+    python3 -m venv venv
+fi
+
+# Activate virtual environment if not already activated
+if [ -z "${VIRTUAL_ENV-}" ]; then
+    # shellcheck source=/dev/null
+    source venv/bin/activate
+fi
+
+# Install project dependencies
+pip install -r requirements.txt
+
+# Check for .env file and prompt user if it doesn't exist
+if [ ! -e ".env" ]; then
+    echo "Please add an .env file in the web/ directory with required environment variables."
+    echo "Press Enter once you have created the web/.env file to continue..."
+    read -r
+fi
+
+# Load environment variables from .env file
+echo "Loading environment variables from .env file..."
+set -a
+source .env
+
+# Check for workspace_requirements.txt
+if [ ! -f "workspace_requirements.txt" ]; then
+    echo "Please create a workspace_requirements.txt file with the required Python packages."
+    echo "Press Enter once you have created the workspace_requirements.txt file to continue..."
+    read -r
+fi
+
+# Ensure .vscode directory exists
+mkdir -p .vscode
+
+# Create or update VSCode settings
+VSCODE_SETTINGS=".vscode/settings.json"
+if [ ! -f "$VSCODE_SETTINGS" ]; then
+    echo "{}" > "$VSCODE_SETTINGS"
+fi
+
+# Run docker compose build
+docker compose build 
+
+# Install dependencies
+pip install -r workspace_requirements.txt
+
+# Spin up the database
+docker compose up -d db
+
+# Wait for the database to be ready
+echo "Waiting for the database to be ready..."
+sleep 5
+
+# Run database migrations
+echo "Running database migrations..."
+python manage.py migrate
+
+# Check if superuser exists and create if not
+echo "Checking for existing superuser..."
+if ! python manage.py shell -c "from django.contrib.auth import get_user_model; exit(0 if get_user_model().objects.filter(is_superuser=True).exists() else 1)"; then
+    echo "No superuser found. Creating superuser (skip with CTRL+C)..."
+    if ! python manage.py createsuperuser; then
+        echo "Skipping superuser creation..."
+    fi
+else
+    echo "Superuser already exists, skipping creation..."
+fi
+python manage.py shell -c "
+from django.contrib.auth import get_user_model
+from allauth.account.models import EmailAddress
+User = get_user_model()
+u = User.objects.filter(is_superuser=True).first()
+u.first_name = 'Test'
+u.last_name = 'User'
+u.save()
+e, created = EmailAddress.objects.get_or_create(
+    user=u, email=u.email,
+    defaults={'verified': True, 'primary': True}
+)
+"
+
+# Create default site
+echo "Creating/getting default site..."
+python manage.py shell -c "
+from django.contrib.sites.models import Site
+from sites.models import SiteAttributes
+Site.objects.update_or_create(
+    id=1,
+    defaults={'name': 'localhost', 'domain': '0.0.0.0:8000'}
+)
+Site.objects.update_or_create(
+    id=2,
+    defaults={'name': 'localhost', 'domain': 'localhost'}
+)
+site_attribute_defaults = {
+    's3_frontend_folder': 'only-used-in-production',
+    'stripe_product_id': 'prod_implementme',
+    'stripe_price_cents': 2000,
+    'from_email': 'team@my-app.openbase.app',
+}
+SiteAttributes.objects.get_or_create(
+    site=Site.objects.get(id=1),
+    defaults=site_attribute_defaults
+)
+SiteAttributes.objects.get_or_create(
+    site=Site.objects.get(id=2),
+    defaults=site_attribute_defaults
+)"
+
+# Check for existing Google OAuth app and create if not present
+echo "Checking for existing Google OAuth configuration..."
+python manage.py shell -c "
+import json
+from allauth.socialaccount.models import SocialApp
+from django.contrib.sites.models import Site
+
+if SocialApp.objects.filter(provider='google').exists():
+    print('Google OAuth already configured, skipping...')
+else:
+    try:
+        print('No Google OAuth configuration found.')
+        print('Please paste your Google OAuth credentials JSON and press Enter (or CTRL+C to skip):')
+        credentials_raw = input()
+        credentials = json.loads(credentials_raw)
+        
+        app_config = credentials.get('web', {})
+        client_id = app_config.get('client_id')
+        client_secret = app_config.get('client_secret')
+        
+        if not (client_id and client_secret):
+            raise ValueError('Could not find client_id and client_secret under web key in credentials')
+        
+        app = SocialApp.objects.create(
+            provider='google',
+            name='My App',
+            client_id=client_id,
+            secret=client_secret,
+            key='',
+            provider_id='',
+            settings={}
+        )
+        
+        # Add both sites to the app
+        app.sites.add(Site.objects.get(id=1))
+        app.sites.add(Site.objects.get(id=2))
+        
+        print('✅ Successfully configured Google OAuth')
+    except KeyboardInterrupt:
+        print('\nSkipping Google OAuth configuration...')
+    except Exception as e:
+        print(f'⚠️  Failed to configure Google OAuth: {str(e)}')"
+
+popd

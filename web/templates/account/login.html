@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <h1>{% trans "Sign In" %}</h1>
+
+  {% get_providers as socialaccount_providers %}
+
+  <div class="social-login">
+    <a href="{% provider_login_url 'google' %}" class="google-login-button">
+      Sign in with Google
+    </a>
+  </div>
+
+  <div class="login-divider">
+    <span>or</span>
+  </div>
+
+  <form class="login" method="POST" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+  </form>
+
+  <div class="login-links">
+    <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+    <a href="{{ signup_url }}">{% trans "Sign Up" %}</a>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,6 @@
+---
+description: Prefer using env variables directly over using Django settings
+globs: **/*.py
+alwaysApply: false
+---
+The Django `settings.py` file is big enough.  If you need to reference something that ought to come from an environment variable, reference the environment variable directly from the code using it.

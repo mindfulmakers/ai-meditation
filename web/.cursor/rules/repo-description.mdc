@@ -1,0 +1,11 @@
+---
+description: The web directory has the Django project with settings.py and user-related Django apps
+globs: *.py
+alwaysApply: true
+---
+
+This `web` Django project is the backbone of all of my other projects. Included in this backbone are Django apps like `users` and `teams` that are shared between all my projects. Pip packages containing Django apps with business logic are defined elsewhere and imported into this backbone project.
+
+TaskIQ is used instead of Celery for tasks.
+
+In general you should try to implement features WITHOUT changing code in `web`.

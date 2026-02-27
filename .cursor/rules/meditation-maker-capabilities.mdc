@@ -1,0 +1,25 @@
+---
+description: Meditation maker capabilities reference for this repo
+globs:
+alwaysApply: true
+---
+
+For `ai_meditation_starter_kit_api/meditation_maker`:
+
+1. Personalized script generation (`iembrace.py`):
+   `generate_personalized_meditation(mood, goal, message_to_loved_one)` calls iEmbrace `/personalization` and returns the generated `script`.
+
+2. TTS through iEmbrace (`iembrace.py`):
+   `generate_tts_audio_iembrace(TTSRequest)` calls `/personalization/tts_service` and returns a normalized `TTSResult` with provider `iembrace` and an `audioUrl`.
+
+3. TTS through ElevenLabs (`elevenlabs_tts.py`):
+   `generate_tts_audio_elevenlabs(TTSRequest, voice_id=None)` uses `ELEVENLABS_API_KEY`, supports `wav/mp3/ogg`, converts pause tokens like `[2s]` into SSML-style break tags, and returns audio bytes in `TTSResult`.
+
+4. AHAP/haptics generation (`ahap.py`):
+   `convert_wav_to_ahap(...)` and `generate_ahap_from_file(...)` turn audio into Apple AHAP pattern JSON using onset detection and audio feature analysis (intensity/sharpness, transient/continuous events).
+
+5. Shared request/response typing (`types.py`):
+   `TTSRequest` validates text and output format (`wav|mp3|ogg`), and `TTSResult` provides a common response shape across providers.
+
+6. Env/config loading (`config.py`):
+   `load_project_env()` loads env vars; required variables include `API_BASE_URL`, `X_USER_EMAIL`, and `ELEVENLABS_API_KEY` for ElevenLabs flows. `ELEVENLABS_VOICE_ID` is optional with a default.

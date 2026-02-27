@@ -1,0 +1,19 @@
+{
+  "template": "https://github.com/openbase-community/templates.git#django-app",
+  "name_snake": "meditations",
+  "name_pretty": "Meditations",
+  "variables": {
+    "api_package_name": "ai_meditation_starter_kit_api",
+    "api_package_name_snake": "ai_meditation_starter_kit_api",
+    "api_prefix": "api",
+    "django_app_name": "meditations",
+    "dot_env_symlink_source": false,
+    "github_user": "gabemontague",
+    "marketing_description": "AI Meditation Starter Kit",
+    "openbase_web_env_content": "VITE_API_BASE_URL=http://localhost:8000",
+    "with_frontend": true,
+    "apps": "\"ai_meditation_starter_kit_api.meditations\"",
+    "name_snake": "meditations",
+    "parent_package_name": "ai_meditation_starter_kit_api"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "id": "basic-iembrace-wav-meditation",
+  "title": "Basic iEmbrace WAV Meditation",
+  "durationMs": 39489,
+  "timeline": [
+    {
+      "atMs": 0,
+      "kind": "wav",
+      "file": "audio/basic-iembrace-wav-meditation-bell.wav"
+    },
+    {
+      "atMs": 7200,
+      "kind": "wav",
+      "file": "audio/basic-iembrace-wav-meditation-intro.wav"
+    },
+    {
+      "atMs": 13047,
+      "kind": "wav",
+      "file": "audio/basic-iembrace-wav-meditation-inhale.wav"
+    },
+    {
+      "atMs": 22027,
+      "kind": "wav",
+      "file": "audio/basic-iembrace-wav-meditation-exhale.wav"
+    },
+    {
+      "atMs": 32816,
+      "kind": "wav",
+      "file": "audio/basic-iembrace-wav-meditation-close.wav"
+    }
+  ]
+}

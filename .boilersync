@@ -12,5 +12,9 @@
     "marketing_description": "AI Meditation Starter Kit",
     "openbase_web_env_content": "VITE_API_BASE_URL=http://localhost:8000",
     "with_frontend": true
-  }
+  },
+  "children": [
+    "ai-meditation-starter-kit-api",
+    "ai-meditation-starter-kit-react"
+  ]
 }

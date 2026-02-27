@@ -1,0 +1,2 @@
+-e ../openbase-cloud-api
+-e ../openbase-cli

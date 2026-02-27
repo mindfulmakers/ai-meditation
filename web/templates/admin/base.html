@@ -1,0 +1,72 @@
+{% extends 'admin/base.html' %} {% block extrahead %}{{ block.super }}
+<style>
+  :root {
+    --primary: #79aec8;
+    --secondary: #417690;
+    --accent: #ffffff;
+    --primary-fg: #fff;
+
+    --body-fg: #333;
+    --body-bg: #fff;
+    --body-quiet-color: #666;
+    --body-loud-color: #000;
+
+    --header-color: #f1f1f1;
+
+    --breadcrumbs-fg: #c4dce8;
+
+    --link-fg: #417893;
+    --link-hover-color: #036;
+    --link-selected-fg: #5b80b2;
+
+    --hairline-color: #e8e8e8;
+    --border-color: #ccc;
+
+    --error-fg: #ba2121;
+
+    --message-success-bg: #dfd;
+    --message-warning-bg: #f1f1f1;
+    --message-error-bg: #ffefef;
+
+    --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+    --selected-bg: #e4e4e4; /* E.g. selected table cells */
+    --selected-row: #f1f1f1;
+  }
+
+  /* Hide admin elements when in iframe */
+  body.in-iframe #header {
+    display: none !important;
+  }
+
+  body.in-iframe .breadcrumbs {
+    display: none !important;
+  }
+
+  body.in-iframe .toggle-nav-sidebar {
+    display: none !important;
+  }
+
+  /* 
+  body.in-iframe nav {
+    display: none !important;
+  } */
+
+  /* Adjust content spacing when elements are hidden */
+  body.in-iframe #content {
+    margin-top: 0 !important;
+    padding-top: 10px;
+  }
+</style>
+
+<script>
+  // Detect if we're in an iframe and hide admin navigation elements
+  (function () {
+    if (window.self !== window.top) {
+      // We're in an iframe, add class to body to trigger CSS
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.classList.add("in-iframe");
+      });
+    }
+  })();
+</script>
+{% endblock %}

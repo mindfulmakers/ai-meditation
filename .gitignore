@@ -10,3 +10,8 @@ data/
 .vscode/extensions.json
 ruff.toml
 CLAUDE.md
+
+# Ignore repository directories
+
+# Generated
+AGENTS.md

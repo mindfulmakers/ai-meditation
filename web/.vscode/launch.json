@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Django: Uvicorn",
+            "consoleName": "Django: Uvicorn",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": "config.asgi:application --host 0.0.0.0 --reload ${config:reloadFlags}",
+            "django": true,
+            "justMyCode": false,
+            "preLaunchTask": "Docker Compose Up"
+        },
+        {
+            "name": "Django: TaskIQ",
+            "consoleName": "Django: TaskIQ",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "taskiq",
+            "args": "worker --log-level=INFO --reload config.taskiq_config:broker config.taskiq_tasks ${config:reloadFlags}",
+            "django": true,
+            "justMyCode": false
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Django",
+            "configurations": [
+                "Django: Uvicorn",
+                "Django: TaskIQ"
+            ],
+            "stopAll": true
+        }
+    ]
+}

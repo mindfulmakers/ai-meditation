@@ -12,5 +12,6 @@
     {
       "url": "https://github.com/openbase-community/react-shared"
     }
-  ]
+  ],
+  "monoRepo": true
 }

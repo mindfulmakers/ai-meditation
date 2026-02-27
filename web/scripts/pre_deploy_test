@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_NAME="$1"
+
+docker run "registry.heroku.com/${APP_NAME}/web:latest" pytest . -p no:cacheprovider

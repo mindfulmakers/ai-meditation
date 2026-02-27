@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Open Browser: Localhost",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:80",
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": [
+                "--new-window"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Everything: Django + React + Browser",
+            "configurations": [
+                "Django: Uvicorn",
+                "Django: TaskIQ",
+                "Open Browser: Localhost"
+            ],
+            "preLaunchTask": "React: Dev",
+            "stopAll": true
+        }
+    ]
+}
