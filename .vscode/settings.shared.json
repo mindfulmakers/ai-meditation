@@ -1,0 +1,3 @@
+{
+  "reloadFlags": "--reload-dir ${workspaceFolder}/ai-meditation-starter-kit-api"
+}

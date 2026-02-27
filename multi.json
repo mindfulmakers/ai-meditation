@@ -1,0 +1,16 @@
+{
+  "repos": [
+    {
+      "url": "https://github.com/openbase-community/web"
+    },
+    {
+      "url": "https://github.com/gabemontague/ai-meditation-starter-kit-api"
+    },
+    {
+      "url": "https://github.com/gabemontague/ai-meditation-starter-kit-react"
+    },
+    {
+      "url": "https://github.com/openbase-community/react-shared"
+    }
+  ]
+}

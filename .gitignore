@@ -1,0 +1,12 @@
+.env
+data/
+.claude/settings.local.json
+.DS_Store
+
+# Generated files
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/extensions.json
+ruff.toml
+CLAUDE.md

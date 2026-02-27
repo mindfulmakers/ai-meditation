@@ -1,0 +1,28 @@
+{
+    "extraPaths": [
+        "web",
+        "openbase-api",
+        "openbase-react"
+    ],
+    "reportUnknownVariableType": false,
+    "reportMissingTypeStubs": false,
+    "reportAny": false,
+    "reportUnannotatedClassAttribute": false,
+    "reportAttributeAccessIssue": true,
+    "reportUnknownMemberType": false,
+    "reportExplicitAny": false,
+    "reportUnknownArgumentType": false,
+    "reportIgnoreCommentWithoutRule": false,
+    "reportPrivateImportUsage": true,
+    "reportUnknownParameterType": false,
+    "reportMissingParameterType": false,
+    "reportMissingTypeArgument": false,
+    "reportUnknownLambdaType": false,
+    "reportImplicitOverride": false,
+    "reportIncompatibleVariableOverride": false,
+    "reportUnusedCallResult": false,
+    "reportIncompatibleMethodOverride": false,
+    "reportUnreachable": false,
+    "reportImportCycles": false,
+    "reportInvalidTypeForm": false
+}
