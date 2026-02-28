@@ -1,0 +1,92 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker Compose Up",
+            "type": "shell",
+            "command": "docker compose up -d",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "close": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Make migrations",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "manage.py",
+                "makemigrations"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Migrate",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "manage.py",
+                "migrate"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Shell",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "manage.py",
+                "shell"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "DB shell",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "manage.py",
+                "dbshell"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Collect static",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "manage.py",
+                "collectstatic",
+                "--noinput"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

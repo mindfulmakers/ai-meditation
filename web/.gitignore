@@ -9,8 +9,6 @@ playground
 nocache.txt
 .pip-cache/
 
-.vscode/settings.json
-.vscode/tasks.json
 
 schema.yml
 .data/
