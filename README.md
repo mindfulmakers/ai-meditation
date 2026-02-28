@@ -2,13 +2,21 @@
 
 ## Getting started
 
-This repo is a [multi](https://github.com/montaguegabe/multi) workspace to manage multiple sub-repositories:
+- Install `uv`
+- `uv tool install multi-workspace`
+- Install Docker + open it
+- `./scripts/setup.sh`
+- Enter an admin login
+- Control C to skip creating a Google OAuth setup when it prompts you
+- Open in Cursor / Restart Cursor if it was open already
+- Use the Cursor Debug runnable that says "everything"
 
-- [web](https://github.com/openbase-community/web)
-- [ai-meditation-starter-kit-api](https://github.com/gabemontague/ai-meditation-starter-kit-api)
-- [ai-meditation-starter-kit-react](https://github.com/gabemontague/ai-meditation-starter-kit-react)
-- [react-shared](https://github.com/openbase-community/react-shared)
 
-To get started, install multi with `pipx install multi-workspace` or `uv tool install multi-workspace`.
+## iOS
+- MIT Guest WiFI will not work unless you are using simulator
+- cd into the iOS folder then:
+  - `tuist install`
+  - `tuist generate`
+- Edit Constants.swift to enter the IP address (local LAN IP address) of your computer so that your phone can talk to it
 
-Then install the [extension](https://marketplace.visualstudio.com/items?itemName=montaguegabe.multi-workspace) in Cursor or VS Code. When you make new changes to the VS Code configurations or other sync config files in a sub-repo, the changes will be automatically synced to the workspace.
+Ask Gabe if you have any issues or want to deploy.
