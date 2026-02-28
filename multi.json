@@ -18,7 +18,8 @@
     },
     {
       "name": "ai-meditation-starter-kit-ios",
-      "description": "iOS app scaffolded from the BoilerSync iOS Tuist template"
+      "description": "iOS app scaffolded from the BoilerSync iOS Tuist template",
+      "url": "https://github.com/gabemontague/ai-meditation-starter-kit-ios"
     }
   ],
   "monoRepo": true
