@@ -9,7 +9,7 @@ const useCdnBase = process.env.VITE_USE_CDN === "true";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 5173,
   },
   base: useCdnBase ? `https://cdn.openbase.app/${s3Name}/` : "/",
   plugins: [react()],
