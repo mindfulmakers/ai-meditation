@@ -56,7 +56,7 @@ struct URLs {
 
     // Auth
     var session: String { "\(baseUrl)/auth/session" }
-    var tokenRefresh: String { "\(baseUrl)/auth/token/refresh" }
+    var tokenRefresh: String { "\(baseUrl)/tokens/refresh" }
     var login: String { "\(baseUrl)/auth/login" }
     var reauthenticate: String { "\(baseUrl)/auth/reauthenticate" }
     var requestLoginCode: String { "\(baseUrl)/auth/code/request" }
@@ -203,10 +203,22 @@ public class AllAuthClient: ObservableObject {
             request.httpBody = try JSONSerialization.data(withJSONObject: data)
         }
 
+        let acceptHeader = request.value(forHTTPHeaderField: "Accept") ?? "<none>"
+        let contentTypeHeader = request.value(forHTTPHeaderField: "Content-Type") ?? "<none>"
+        print("[AllAuthClient] \(method) \(url)")
+        print("[AllAuthClient] request Accept: \(acceptHeader), Content-Type: \(contentTypeHeader)")
+
         let (responseData, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw AllAuthError.invalidResponse
+        }
+
+        let responseContentType = httpResponse.value(forHTTPHeaderField: "Content-Type") ?? "<none>"
+        print("[AllAuthClient] HTTP \(httpResponse.statusCode), content-type: \(responseContentType), bytes: \(responseData.count)")
+        print("[AllAuthClient] response body preview: \(responseBodyPreview(from: responseData))")
+        if !responseContentType.lowercased().contains("application/json") {
+            print("[AllAuthClient] WARNING: response content-type is not JSON")
         }
 
         // Handle 401 with JWT auto-refresh
@@ -222,11 +234,12 @@ public class AllAuthClient: ObservableObject {
             sessionToken = newToken
         }
 
-        // Handle JWT tokens from response (when using JWT token strategy)
-        if let accessToken = json["meta"]["access_token"].string {
+        // Handle JWT tokens from response (when using JWT token strategy).
+        // allauth responses may provide tokens under either `data` or `meta`.
+        if let accessToken = json["data"]["access_token"].string ?? json["meta"]["access_token"].string {
             jwtAccessToken = accessToken
         }
-        if let refreshToken = json["meta"]["refresh_token"].string {
+        if let refreshToken = json["data"]["refresh_token"].string ?? json["meta"]["refresh_token"].string {
             jwtRefreshToken = refreshToken
         }
 
@@ -244,6 +257,12 @@ public class AllAuthClient: ObservableObject {
         }
 
         return json
+    }
+
+    private func responseBodyPreview(from data: Data) -> String {
+        let maxBytes = 500
+        let previewData = data.prefix(maxBytes)
+        return String(data: previewData, encoding: .utf8) ?? "<non-utf8>"
     }
 
     private func handleAuthChange(json: JSON, previousAuth: JSON?) async {
@@ -319,7 +338,7 @@ public class AllAuthClient: ObservableObject {
         return try await request(
             method: "POST",
             url: urls.tokenRefresh,
-            data: ["refresh": refreshToken]
+            data: ["refresh_token": refreshToken]
         )
     }
 

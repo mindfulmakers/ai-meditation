@@ -29,7 +29,6 @@ from appstoreserverlibrary.signed_data_verifier import (
     VerificationException,
 )
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import generics, status
@@ -40,6 +39,7 @@ from rest_framework.views import APIView
 
 from payment import serializers
 from payment.models import Account, Subscription
+from sites.utils import get_or_create_current_site
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -345,6 +345,7 @@ class StripeCheckoutView(APIView):
 
     def post(self, request, *args, **kwargs):
         account = request.user.get_account()
+        current_site = get_or_create_current_site(request)
 
         # Get the base URL from the current request
         protocol = "https" if request.is_secure() else "http"
@@ -362,14 +363,10 @@ class StripeCheckoutView(APIView):
                 line_items=[
                     {
                         "price_data": {
-                            "product": get_current_site(
-                                request
-                            ).attributes.stripe_product_id,
+                            "product": current_site.attributes.stripe_product_id,
                             "recurring": {"interval": "month"},
                             "currency": "usd",
-                            "unit_amount": get_current_site(
-                                request
-                            ).attributes.stripe_price_cents,
+                            "unit_amount": current_site.attributes.stripe_price_cents,
                         },
                         "quantity": 1,
                     }

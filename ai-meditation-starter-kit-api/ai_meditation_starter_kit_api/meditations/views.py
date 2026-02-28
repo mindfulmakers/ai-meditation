@@ -14,14 +14,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Meditation, MeditationAudio
+from .models import Meditation, MeditationAudio, MeditationHaptic
 from .serializers import MeditationModelSerializer, MeditationSerializer
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MEDITATIONS_DIRECTORY = WORKSPACE_ROOT / "meditations"
 DEFAULT_AUDIO_DIRECTORY = WORKSPACE_ROOT / "audio"
+DEFAULT_HAPTICS_DIRECTORY = WORKSPACE_ROOT / "haptics"
 TRUTHY_VALUES = {"1", "true", "t", "yes", "y", "on"}
 AUDIO_ROUTE_NAME = "meditations-audio"
+HAPTICS_ROUTE_NAME = "meditations-haptics"
 
 
 def _use_json_meditations() -> bool:
@@ -34,6 +36,12 @@ def _get_meditations_directory() -> Path:
 
 def _get_audio_directory() -> Path:
     return Path(os.environ.get("MEDITATIONS_AUDIO_DIRECTORY", str(DEFAULT_AUDIO_DIRECTORY)))
+
+
+def _get_haptics_directory() -> Path:
+    return Path(
+        os.environ.get("MEDITATIONS_HAPTICS_DIRECTORY", str(DEFAULT_HAPTICS_DIRECTORY))
+    )
 
 
 def _normalize_audio_key(raw_key: str) -> str:
@@ -52,7 +60,23 @@ def _normalize_audio_key(raw_key: str) -> str:
 
 def _to_audio_serving_url(request, file_value: str) -> str:
     normalized_key = _normalize_audio_key(file_value)
-    url = reverse(AUDIO_ROUTE_NAME, kwargs={"audio_path": normalized_key})
+    serving_key = (
+        normalized_key.removeprefix("audio/")
+        if normalized_key.startswith("audio/")
+        else normalized_key
+    )
+    url = reverse(AUDIO_ROUTE_NAME, kwargs={"audio_path": serving_key})
+    return request.build_absolute_uri(url)
+
+
+def _to_haptics_serving_url(request, file_value: str) -> str:
+    normalized_key = _normalize_audio_key(file_value)
+    serving_key = (
+        normalized_key.removeprefix("haptics/")
+        if normalized_key.startswith("haptics/")
+        else normalized_key
+    )
+    url = reverse(HAPTICS_ROUTE_NAME, kwargs={"haptic_path": serving_key})
     return request.build_absolute_uri(url)
 
 
@@ -77,6 +101,17 @@ def _rewrite_timeline_audio_urls(request, timeline: object) -> object:
         ):
             updated_entry = dict(entry)
             updated_entry["file"] = _to_audio_serving_url(request, file_value)
+            updated_timeline.append(updated_entry)
+            continue
+        if (
+            kind == "ahap"
+            and isinstance(file_value, str)
+            and file_value
+            and not file_value.startswith("http://")
+            and not file_value.startswith("https://")
+        ):
+            updated_entry = dict(entry)
+            updated_entry["file"] = _to_haptics_serving_url(request, file_value)
             updated_timeline.append(updated_entry)
             continue
 
@@ -105,6 +140,20 @@ def _resolve_json_audio_path(audio_key: str) -> Path:
     return audio_file_path
 
 
+def _resolve_json_haptic_path(haptic_key: str) -> Path:
+    normalized_key = _normalize_audio_key(haptic_key)
+    relative_key = (
+        normalized_key.removeprefix("haptics/")
+        if normalized_key.startswith("haptics/")
+        else normalized_key
+    )
+    haptic_file_path = _get_haptics_directory() / relative_key
+    if not haptic_file_path.exists() or not haptic_file_path.is_file():
+        msg = "Haptic file not found."
+        raise NotFound(msg)
+    return haptic_file_path
+
+
 def _resolve_model_audio_asset(audio_key: str) -> MeditationAudio:
     normalized_key = _normalize_audio_key(audio_key)
     audio_asset = MeditationAudio.objects.filter(audio_key=normalized_key).first()
@@ -124,6 +173,28 @@ def _resolve_model_audio_asset(audio_key: str) -> MeditationAudio:
         return audio_asset
 
     msg = "Audio file not found."
+    raise NotFound(msg)
+
+
+def _resolve_model_haptic_asset(haptic_key: str):
+    normalized_key = _normalize_audio_key(haptic_key)
+    haptic_asset = MeditationHaptic.objects.filter(haptic_key=normalized_key).first()
+    if haptic_asset is not None:
+        return haptic_asset
+
+    prefixed_key = f"haptics/{normalized_key}"
+    if not normalized_key.startswith("haptics/"):
+        haptic_asset = MeditationHaptic.objects.filter(haptic_key=prefixed_key).first()
+    if haptic_asset is not None:
+        return haptic_asset
+
+    if normalized_key.startswith("haptics/"):
+        unprefixed_key = normalized_key.removeprefix("haptics/")
+        haptic_asset = MeditationHaptic.objects.filter(haptic_key=unprefixed_key).first()
+    if haptic_asset is not None:
+        return haptic_asset
+
+    msg = "Haptic file not found."
     raise NotFound(msg)
 
 
@@ -193,3 +264,17 @@ class MeditationAudioView(APIView):
         audio_asset = _resolve_model_audio_asset(audio_path)
         content_type = mimetypes.guess_type(audio_asset.file.name)[0] or "application/octet-stream"
         return FileResponse(audio_asset.file.open("rb"), content_type=content_type)
+
+
+class MeditationHapticView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, haptic_path: str) -> FileResponse:
+        if _use_json_meditations():
+            file_path = _resolve_json_haptic_path(haptic_path)
+            content_type = mimetypes.guess_type(file_path.name)[0] or "application/json"
+            return FileResponse(file_path.open("rb"), content_type=content_type)
+
+        haptic_asset = _resolve_model_haptic_asset(haptic_path)
+        content_type = mimetypes.guess_type(haptic_asset.file.name)[0] or "application/json"
+        return FileResponse(haptic_asset.file.open("rb"), content_type=content_type)

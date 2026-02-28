@@ -3,6 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { isVisualEffectId } from "@/features/timeline-visuals/effectIds";
 import {
   extractPlaybackEvents,
@@ -302,18 +310,26 @@ const Dashboard = () => {
                     This meditation has no timeline events.
                   </p>
                 ) : (
-                  <div className="space-y-2">
-                    {selectedTimeline.map((event, index) => (
-                      <div
-                        key={`${event.atMs}-${event.kind}-${index}`}
-                        className="flex items-center justify-between rounded-sm bg-muted/50 px-2 py-1 text-xs"
-                      >
-                        <span>{event.atMs}ms</span>
-                        <span>{getEventKindLabel(event)}</span>
-                        <span className="truncate">{getEventTargetLabel(event)}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-24">Time</TableHead>
+                        <TableHead className="w-28">Type</TableHead>
+                        <TableHead>Target</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedTimeline.map((event, index) => (
+                        <TableRow key={`${event.atMs}-${event.kind}-${index}`}>
+                          <TableCell className="font-mono text-xs">{event.atMs}ms</TableCell>
+                          <TableCell className="text-xs">{getEventKindLabel(event)}</TableCell>
+                          <TableCell className="truncate text-xs">
+                            {getEventTargetLabel(event)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </div>
 

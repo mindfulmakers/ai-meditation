@@ -1,13 +1,17 @@
 from __future__ import annotations
 
-import io
-import wave
-from typing import Any, Mapping
+import subprocess
+from typing import TYPE_CHECKING, Any
 
 import requests
 
 from .config import get_elevenlabs_api_key, load_project_env
-from .types import SFXRequest, SFXResult, coerce_sfx_request
+from .types import SFXResult, coerce_sfx_request
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from .types import SFXRequest
 
 _ELEVENLABS_BASE_URL = "https://api.elevenlabs.io/v1"
 
@@ -16,7 +20,8 @@ def _output_format_to_elevenlabs(value: str) -> str:
     mapping = {
         "mp3": "mp3_44100_128",
         "ogg": "ogg_44100_128",
-        "wav": "pcm_44100",
+        # pcm_44100 requires Pro tier, so request MP3 and convert to WAV locally.
+        "wav": "mp3_44100_128",
     }
     return mapping[value]
 
@@ -30,14 +35,32 @@ def _output_format_to_mime_type(value: str) -> str:
     return mapping[value]
 
 
-def _pcm16le_to_wav(pcm_bytes: bytes, *, sample_rate: int = 44100) -> bytes:
-    buffer = io.BytesIO()
-    with wave.open(buffer, "wb") as wav_file:
-        wav_file.setnchannels(1)
-        wav_file.setsampwidth(2)
-        wav_file.setframerate(sample_rate)
-        wav_file.writeframes(pcm_bytes)
-    return buffer.getvalue()
+def _mp3_to_wav(mp3_bytes: bytes) -> bytes:
+    """Convert MP3 bytes to WAV using ffmpeg."""
+    result = subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            "pipe:0",
+            "-ar",
+            "44100",
+            "-ac",
+            "1",
+            "-sample_fmt",
+            "s16",
+            "-f",
+            "wav",
+            "pipe:1",
+        ],
+        input=mp3_bytes,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        msg = f"ffmpeg MP3-to-WAV conversion failed: {result.stderr.decode()}"
+        raise RuntimeError(msg)
+    return result.stdout
 
 
 def generate_sfx_audio_elevenlabs(
@@ -70,7 +93,7 @@ def generate_sfx_audio_elevenlabs(
 
     audio_bytes = response.content
     if normalized_request.outputFormat == "wav":
-        audio_bytes = _pcm16le_to_wav(audio_bytes)
+        audio_bytes = _mp3_to_wav(audio_bytes)
 
     return SFXResult(
         success=True,

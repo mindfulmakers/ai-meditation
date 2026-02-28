@@ -23,3 +23,5 @@ For `ai_meditation_starter_kit_api/meditation_maker`:
 
 6. Env/config loading (`config.py`):
    `load_project_env()` loads env vars; required variables include `API_BASE_URL`, `X_USER_EMAIL`, and `ELEVENLABS_API_KEY` for ElevenLabs flows. `ELEVENLABS_VOICE_ID` is optional with a default.
+
+   For more details on how to use these to create a meditation/meditation file/meditation JSON, see ./.agents/skills/meditation-creator/SKILL.md

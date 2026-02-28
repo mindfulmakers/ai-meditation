@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from django.contrib.sites.models import Site
 from drf_spectacular.generators import SchemaGenerator
+
+from sites.utils import get_or_create_current_site
 
 
 class TitleSettingGenerator(SchemaGenerator):
     def get_schema(self, request=None, public: bool = False):
-        current_site = Site.objects.get_current(request)
+        current_site = get_or_create_current_site(request)
         full_schema = super().get_schema(request, public)
 
         # Keep only the schemas

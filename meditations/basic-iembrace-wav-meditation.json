@@ -15,14 +15,32 @@
       "file": "audio/basic-iembrace-wav-meditation-bell.wav"
     },
     {
+      "atMs": 0,
+      "kind": "ahap",
+      "file": "haptics/basic-iembrace-wav-meditation-bell.ahap",
+      "platform": "ios"
+    },
+    {
       "atMs": 7200,
       "kind": "wav",
       "file": "audio/basic-iembrace-wav-meditation-intro.wav"
     },
     {
+      "atMs": 7200,
+      "kind": "ahap",
+      "file": "haptics/basic-iembrace-wav-meditation-intro.ahap",
+      "platform": "ios"
+    },
+    {
       "atMs": 13047,
       "kind": "wav",
       "file": "audio/basic-iembrace-wav-meditation-inhale.wav"
+    },
+    {
+      "atMs": 13047,
+      "kind": "ahap",
+      "file": "haptics/basic-iembrace-wav-meditation-inhale.ahap",
+      "platform": "ios"
     },
     {
       "atMs": 14500,
@@ -35,6 +53,12 @@
       "file": "audio/basic-iembrace-wav-meditation-exhale.wav"
     },
     {
+      "atMs": 22027,
+      "kind": "ahap",
+      "file": "haptics/basic-iembrace-wav-meditation-exhale.ahap",
+      "platform": "ios"
+    },
+    {
       "atMs": 27000,
       "kind": "effect",
       "effectId": "starfield"
@@ -43,6 +67,12 @@
       "atMs": 32816,
       "kind": "wav",
       "file": "audio/basic-iembrace-wav-meditation-close.wav"
+    },
+    {
+      "atMs": 32816,
+      "kind": "ahap",
+      "file": "haptics/basic-iembrace-wav-meditation-close.ahap",
+      "platform": "ios"
     }
   ]
 }

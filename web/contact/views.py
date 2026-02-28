@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from django.contrib.sites.shortcuts import get_current_site
 from contact import serializers
+from sites.utils import get_or_create_current_site
 
 
 class SubmitContactView(generics.CreateAPIView):
@@ -11,5 +11,5 @@ class SubmitContactView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        site = get_current_site(self.request)
+        site = get_or_create_current_site(self.request)
         serializer.save(site=site)

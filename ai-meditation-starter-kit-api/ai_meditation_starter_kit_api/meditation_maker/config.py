@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-DEFAULT_ELEVENLABS_VOICE_ID = "Mu5jxyqZOLIGltFpfalg"
+DEFAULT_ELEVENLABS_VOICE_ID = "SAz9YHcvj6GT2YYXdXww"  # River - Relaxed, Neutral
 
 
 def load_project_env() -> None:
@@ -20,7 +20,8 @@ def load_project_env() -> None:
 def require_env(name: str) -> str:
     value = os.getenv(name)
     if not value:
-        raise RuntimeError(f"Missing required environment variable: {name}")
+        msg = f"Missing required environment variable: {name}"
+        raise RuntimeError(msg)
     return value
 
 

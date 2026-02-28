@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "id": "basic-elevenlabs-wav-meditation",
+  "title": "Basic ElevenLabs WAV Meditation",
+  "durationMs": 34823,
+  "timeline": [
+    {
+      "atMs": 0,
+      "kind": "ahap",
+      "file": "haptics/basic-elevenlabs-wav-meditation-bell.ahap",
+      "platform": "ios"
+    },
+    {
+      "atMs": 0,
+      "kind": "effect",
+      "effectId": "calm-breath"
+    },
+    {
+      "atMs": 0,
+      "kind": "wav",
+      "file": "audio/basic-elevenlabs-wav-meditation-bell.wav"
+    },
+    {
+      "atMs": 8000,
+      "kind": "ahap",
+      "file": "haptics/basic-elevenlabs-wav-meditation-intro.ahap",
+      "platform": "ios"
+    },
+    {
+      "atMs": 8000,
+      "kind": "wav",
+      "file": "audio/basic-elevenlabs-wav-meditation-intro.wav"
+    },
+    {
+      "atMs": 17129,
+      "kind": "ahap",
+      "file": "haptics/basic-elevenlabs-wav-meditation-inhale.ahap",
+      "platform": "ios"
+    },
+    {
+      "atMs": 17129,
+      "kind": "wav",
+      "file": "audio/basic-elevenlabs-wav-meditation-inhale.wav"
+    },
+    {
+      "atMs": 18629,
+      "kind": "effect",
+      "effectId": "soft-pulse"
+    },
+    {
+      "atMs": 24324,
+      "kind": "ahap",
+      "file": "haptics/basic-elevenlabs-wav-meditation-exhale.ahap",
+      "platform": "ios"
+    },
+    {
+      "atMs": 24324,
+      "kind": "wav",
+      "file": "audio/basic-elevenlabs-wav-meditation-exhale.wav"
+    },
+    {
+      "atMs": 25702,
+      "kind": "effect",
+      "effectId": "starfield"
+    },
+    {
+      "atMs": 29702,
+      "kind": "ahap",
+      "file": "haptics/basic-elevenlabs-wav-meditation-close.ahap",
+      "platform": "ios"
+    },
+    {
+      "atMs": 29702,
+      "kind": "wav",
+      "file": "audio/basic-elevenlabs-wav-meditation-close.wav"
+    }
+  ]
+}

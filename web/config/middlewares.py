@@ -1,11 +1,11 @@
 from asgiref.sync import (
     iscoroutinefunction,
-    sync_to_async,
 )
 from django.contrib import admin
 from django.contrib.sites.models import SITE_CACHE
-from django.contrib.sites.shortcuts import get_current_site
 from django.utils.decorators import sync_and_async_middleware
+
+from sites.utils import aget_or_create_current_site, get_or_create_current_site
 
 
 def _set_admin_headers(site):
@@ -23,7 +23,7 @@ def admin_name_middleware(get_response):
             if host in SITE_CACHE:
                 site = SITE_CACHE[host]
             else:
-                site = await sync_to_async(get_current_site)(request)
+                site = await aget_or_create_current_site(request)
             _set_admin_headers(site)
             response = await get_response(request)
             return response
@@ -31,7 +31,7 @@ def admin_name_middleware(get_response):
         return async_impl
 
     def sync_impl(request):
-        site = get_current_site(request)
+        site = get_or_create_current_site(request)
         _set_admin_headers(site)
         response = get_response(request)
         return response

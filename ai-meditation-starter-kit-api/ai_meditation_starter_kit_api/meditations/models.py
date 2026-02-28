@@ -36,3 +36,19 @@ class MeditationAudio(models.Model):
 
     def __str__(self):
         return self.audio_key
+
+
+class MeditationHaptic(models.Model):
+    """📳 Persisted meditation haptic (AHAP) asset."""
+
+    public_id = PublicIdField()
+    haptic_key = models.CharField(max_length=255, unique=True, db_index=True)
+    file = models.FileField(upload_to="meditations/haptics/")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["haptic_key"]
+
+    def __str__(self):
+        return self.haptic_key

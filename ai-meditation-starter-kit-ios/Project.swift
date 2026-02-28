@@ -23,6 +23,9 @@ let project = Project(
             deploymentTargets: .iOS("18.0"),
             infoPlist: .extendingDefault(with: [
                 "UILaunchScreen": .dictionary([:]),
+                "NSAppTransportSecurity": .dictionary([
+                    "NSAllowsArbitraryLoads": .boolean(true),
+                ]),
             ]),
             sources: ["AiMeditation/**"],
             resources: ["AiMeditation/Assets.xcassets", "AiMeditation/Preview Content/**"],

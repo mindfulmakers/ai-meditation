@@ -1,0 +1,9 @@
+---
+description: Use the repo web virtual environment for Python commands
+globs:
+alwaysApply: true
+---
+
+When running Python/package commands, activate:
+
+`./web/venv`
